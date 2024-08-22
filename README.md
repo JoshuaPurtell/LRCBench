@@ -4,7 +4,7 @@ Evals meant to evaluate language models' ability to reason over long contexts.
 
 # Benchmarks
 
-## Coding
+## Helper Function Invocation - Data Science
 | LM | Score (Largest haystack size at which P(success) >= 0.5) |
 |:----------|---------------:|
 | Claude-3-opus-20240229 | 200+ |
