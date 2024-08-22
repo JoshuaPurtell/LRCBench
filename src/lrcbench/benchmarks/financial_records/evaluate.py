@@ -18,14 +18,14 @@ async def main(
     for haystack_size in haystack_sizes:
         try:
             pass_at_k = await score_for_size(haystack_size, dag, benchmark)
-            print(f"Pass@K for haystack size {haystack_size}: {pass_at_k}")
+            print(f"P[Success] for haystack size {haystack_size}: {pass_at_k}")
             if pass_at_k <= 0.5:
                 break
             largest_passing_haystack_size = haystack_size
         except Exception as e:
             print(f"Error for haystack size {haystack_size}: {e}")
             break
-    print(f"Largest passing (> .5 pass@k) haystack size: {largest_passing_haystack_size}")
+    print(f"Largest passing (P[Success]) haystack size: {largest_passing_haystack_size}")
     return largest_passing_haystack_size
 
 if __name__ == "__main__":
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     k_for_pass_at_k = 10
     benchmark = FinancialRecordsBenchmark(haystack_sizes=haystack_sizes, k=k_for_pass_at_k)
     dag = records_problem_single_step(
-        model_name="claude-3-opus-20240229"
+        model_name="gemini-1.5-flash"
     )
     asyncio.run(main(haystack_sizes, dag, benchmark))
     
