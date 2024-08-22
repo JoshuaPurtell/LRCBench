@@ -4,8 +4,8 @@ Evals meant to evaluate language models' ability to reason over long contexts.
 
 Currently, we support 3 settings with similar objectives:
 - Coding: The model is given a coding question and a set of helper functions. It must select which (3) helper functions solve the problem.
-- Transaction Matching: The model is given a set of accounting records, from which all but one can be paired according to the following criteria: a pair of records have opposite sign amounts, the same counterparty, and a date within 4 days. It must return the unpaired record.
-- 2-cycle multiplication: The model is given a 2-cycles (from undergraduate group theory), and is asked to return the product of the two cycles in simplified form. N.B. - currently, LM models do exceptionally, shockingly poorly on this task.
+- Transaction Matching: The model is given a set of accounting records, from which all but one can be paired according to the following criteria: a pair of records have opposite sign / same magnitude amounts, the same counterparty, and a date within 4 days. It must return the unpaired record.
+- 2-cycle multiplication: The model is given a set of 2-cycles (from undergraduate group theory), and is asked to return the product of the two cycles in simplified form. (Note: Currently, LM models perform surprisingly poorly on this task.)
 
 # Benchmarks
 
