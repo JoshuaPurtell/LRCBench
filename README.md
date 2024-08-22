@@ -8,7 +8,7 @@ Evals meant to evaluate language models' ability to reason over long contexts.
 TBD (will involve using a combination of helper functions)
 
 ## Transaction Matching
-| LM | Score (Largest N pairs at which pass @ 10 >= 5) |
+| LM | Score (Largest N pairs at which P(success) >= 0.5) |
 |:----------|---------------:|
 | Claude-3-5-sonnet-20240620 | 160 |
 | Claude-3-opus-20240229 | 140 |
@@ -18,7 +18,7 @@ TBD (will involve using a combination of helper functions)
 | GPT-4o-mini | 10 |
 
 ## 2-cycle multiplication (Possibly implemented poorly?)
-| LM | Score (Largest N 2-cycles at which pass @ 10 >= 5) |
+| LM | Score (Largest N 2-cycles at which P(succes)] >= 0.5) |
 |:----------|---------------:|
 | Claude-3-5-sonnet-20240620 | 2 |
 | Claude-3-opus-20240229 | 1 |
