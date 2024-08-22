@@ -15,6 +15,8 @@ Currently, we support 3 settings with similar objectives:
 | Claude-3-opus-20240229 | 200+ |
 | Claude-3-5-sonnet-20240620 | 140 |
 | GPT-4(-32k) | 40 |
+| Gemini-1.5-pro | 20 |
+| Gemini-1.5-flash | 20 |
 | GPT-4o-2024-08-06 | 20 |
 | GPT-4o-mini | 10 |
 | GPT-4-turbo | 5 |
@@ -23,8 +25,10 @@ Currently, we support 3 settings with similar objectives:
 | LM | Score (Largest N pairs at which P(success) >= 0.5) |
 |:----------|---------------:|
 | Claude-3-5-sonnet-20240620 | 160 |
+| Gemini-1.5-pro | 140 |
 | Claude-3-opus-20240229 | 140 |
 | GPT-4 | 40 |
+| Gemini-1.5-flash | 30 |
 | GPT-4o-turbo | 30 |
 | GPT-4o-2024-08-06 | 20 |
 | GPT-4o-mini | 10 |
@@ -33,8 +37,10 @@ Currently, we support 3 settings with similar objectives:
 | LM | Score (Largest N 2-cycles at which P(success) >= 0.5) |
 |:----------|---------------:|
 | Claude-3-5-sonnet-20240620 | 2 |
-| GPT-4 | 2 |
 | GPT-4o-turbo | 2 |
 | GPT-4o-2024-08-06 | 2 |
 | GPT-4o-mini | 2 |
+| GPT-4 | 2 |
 | Claude-3-opus-20240229 | 1 |
+| Gemini-1.5-pro | 0 |
+| Gemini-1.5-flash | 0 |
