@@ -22,13 +22,18 @@ def create_synthetic_datum(k=5, trial=0) -> Tuple[List[Permutation], Permutation
 
 def compare_permutations(answer_str: str, correct_permutation: Permutation) -> bool:
     cycle_str = answer_str.split("\n")[-1].strip()
+    last_alpha_index = max((i for i, c in enumerate(cycle_str) if c.isalpha()), default=-1)
+    if last_alpha_index != -1:
+        cycle_str = cycle_str[last_alpha_index + 1:].strip()
+
     def parse_cycle_notation(cycle_str: str) -> Permutation:
         cycle_str = cycle_str.strip()
         if cycle_str == "()" or cycle_str == "":
             return Permutation()
         cycles = []
         for cycle in cycle_str.strip("()").split(")("):
-            elements = cycle.replace(",", " ").split()
+            elements = [e.replace(")", "").replace("(", "").replace(".", "").replace(":","").strip() for e in cycle.replace(",", " ").split()]
+            elements = [e for e in elements if e != ""]
             if len(elements) > 1:
                 cycles.append(tuple(map(int, elements)))
         return Permutation(cycles)
@@ -41,7 +46,7 @@ def compare_permutations(answer_str: str, correct_permutation: Permutation) -> b
 class AlgebraQuestion(Question):
     def __init__(self, haystack: List[Permutation], needle: Permutation):
         self.information = {
-            "question": f"Multiply the following 2-cycles from S4: " + " * ".join(str(p) for p in haystack),
+            "question": " * ".join(str(p) for p in haystack),
             "answer": str(needle),
             "haystack_size": len(haystack)
         }
@@ -59,11 +64,8 @@ class AlgebraQuestion(Question):
             {"question": self.information["question"]}, verbose=True
         )
         answer = output["answer"]
-        try:
-            correctness = compare_permutations(answer, self.information["answer"])
-        except Exception as e:
-            print("Invalid answer:", answer.split("\n")[-1])
-            correctness = False
+ 
+        correctness = compare_permutations(answer, self.information["answer"])
         return correctness, dag_record
 
     async def compute_and_score_attempt(
@@ -81,13 +83,11 @@ class AlgebraQuestion(Question):
         output, dag_record = await lm_dag.arun(
             {"question": self.information["question"]}, verbose=True
         )
+        system_message, user_message = list(lm_dag.nodes.values())[0].transform.prompt.compile(
+            {"<<<HAYSTACK>>>": self.information["question"]}
+        )
         answer = output["answer"]
-        #correctness = str(answer).strip() == self.information["answer"]
-        try:
-            correctness = compare_permutations(answer, self.information["answer"])
-        except Exception as e:
-            print("Invalid answer:", answer.split("\n")[-1])
-            correctness = False
+        correctness = compare_permutations(answer, self.information["answer"])
         return correctness, dag_record
 
 class AlgebraBenchmark(QABenchmark):
