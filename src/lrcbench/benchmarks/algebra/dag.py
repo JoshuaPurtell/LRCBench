@@ -1,9 +1,17 @@
-from apropos.src.core.programs.convenience_functions.dag_constructors import build_single_step_program
-from apropos.src.core.programs.prompt import PromptTemplate, SystemMessage, UserMessage, Topic
+from apropos.src.core.programs.convenience_functions.dag_constructors import (
+    build_single_step_program,
+)
+from apropos.src.core.programs.prompt import (
+    PromptTemplate,
+    SystemMessage,
+    UserMessage,
+    Topic,
+)
 from pydantic import BaseModel
 
 # class PermutationResponse(BaseModel):
 #     answer: str
+
 
 def algebra_problem_single_step(model_name="gpt-3.5-turbo"):
     execute = PromptTemplate(
@@ -45,7 +53,7 @@ def algebra_problem_single_step(model_name="gpt-3.5-turbo"):
             ]
         ),
         response_type="str",
-        response_model_scheme=None,#PermutationResponse.schema()
+        response_model_scheme=None,  # PermutationResponse.schema()
         demonstrations=[],
     )
     algebra_problem_dag = build_single_step_program(
