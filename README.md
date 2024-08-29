@@ -38,10 +38,10 @@ Sample size: 10 problems
 | LM | Score | Size at First Failure | Effective Context Window |Correctnesses |
 |:----------|---------------:|---------------:|:----------|
 | Claude-3-5-sonnet-20240620 | 400 | 80 | 13798 | TTTTTTTTTT8T7863852
-| Gemini-1.5-pro | 200 | ??? | ??? | TTTT78899877783844
+| Gemini-1.5-pro | 200 | _* | _ | TTTT78899877783844
 | Claude-3-opus-20240229 | 160 | 60 | 4982 | 9TT89TTT98787723
 | GPT-4(-32k) | 120 | 20 | 3882 | TTT98987966955
-| Gemini-1.5-flash | 40 | ??? | TTT6623
+| Gemini-1.5-flash | 40 | _ | _ | TTT6623
 | GPT-4-turbo | 40 | 10 | 1388 | TTT7652
 | GPT-4o-2024-08-06 | 30 | 10 | 1113 | TTT823
 | GPT-4o-mini | 20 | 5 | 837 | TT853
