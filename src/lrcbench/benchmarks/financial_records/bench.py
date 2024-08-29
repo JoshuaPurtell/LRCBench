@@ -3,7 +3,7 @@ from apropos.src.core.programs.dag import LM_DAG, DagRecord
 import random
 from datetime import datetime, timedelta
 from typing import Tuple, Dict, List
-
+random.seed(42)
 
 def match(record_a, record_b):
     return (
