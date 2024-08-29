@@ -12,7 +12,7 @@ Currently, we support 3 settings with similar objectives:
 In order to make these scores more robust to noise, we stop after 2 consecutive runs that fail to reach 0.6.
 
 ## Helper Function Invocation - Data Science
-| LM | Score (Largest haystack size at which P(success) >= 0.5) | AUC | Scores |
+| LM | Best Score | Best Streak | Scores |
 |:----------|---------------:|:----------|:----------|
 | Gemini-1.5-pro | 180 | 0 | 767777667766765
 | GPT-4(-32k) | 80 | 0 | 8775665755
@@ -25,7 +25,7 @@ In order to make these scores more robust to noise, we stop after 2 consecutive 
 | gemini-1.5-flash-8b-exp-0827 | 0 | 0 | 3
 
 ## Transaction Matching
-| LM | Score (Largest N pairs at which P(success) >= 0.5) | Perfect Score Streak Broken After| Scores |
+| LM | Best Score | Best Streak | Scores |
 |:----------|---------------:|---------------:|:----------|
 | Gemini-1.5-pro | 200 | 20 | TTTT78899877783844
 | Claude-3-5-sonnet-20240620 | 180 | 80 | TTTTTTTTTT8T78634
@@ -40,7 +40,7 @@ In order to make these scores more robust to noise, we stop after 2 consecutive 
 * Previously 40 (gpt-4 only), now 100 (gpt-4-32k)
 
 ## 2-cycle multiplication (Possibly implemented poorly?)
-| LM | Score (Largest N 2-cycles at which P(success) >= 0.5) | AUC | Scores |
+| LM | Best Score | Best Streak | Scores |
 |:----------|---------------:|:----------|:----------|
 | GPT-4-turbo | 3 | 1 | T800
 | Claude-3-5-sonnet-20240620 | 2 | 1 | T42
