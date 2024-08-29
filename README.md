@@ -11,6 +11,10 @@ Currently, we support 3 settings with similar objectives:
 
 In order to make these scores more robust to noise, we stop after 2 consecutive runs that fail to reach 0.6.
 
+Best Score: The largest haystack size before the two consecutive runs that fail to reach 0.6.
+Best Streak: The highest haystack size such that the model earned a full score up to and including that size.
+Scores: The scores for each haystack size.
+
 ## Helper Function Invocation - Data Science
 | LM | Best Score | Best Streak | Scores |
 |:----------|---------------:|:----------|:----------|
