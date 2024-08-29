@@ -45,7 +45,7 @@ Sample size: 10 problems
 | GPT-4-turbo | 40 | 10 | 1388 | TTT7652
 | GPT-4o-2024-08-06 | 30 | 10 | 1113 | TTT823
 | GPT-4o-mini | 20 | 5 | 837 | TT853
-| gemini-1.5-flash-8b-exp-0827 | 10 | 5 | TT42
+| gemini-1.5-flash-8b-exp-0827 | 10 | 5 | _ | TT42
 
 ![Transactions Problem Performance](visuals/transactions_problem.png)
 
