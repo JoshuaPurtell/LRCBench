@@ -4,17 +4,33 @@ import random
 import sys
 import uuid
 from typing import Dict, List, Tuple
-
+import os
+import json
 from apropos import LLM
 from apropos.src.bench.base import Benchmark, Question
 from apropos.src.core.programs.dag import LM_DAG, DagRecord
 from src.lrcbench.benchmarks.code.helpers import *
 from src.lrcbench.benchmarks.code.helpers import BASE_DATAFRAME
+import random
+
+random.seed(42)
+
+
+import hashlib
+
+
+def generate_deterministic_id(name):
+    return hashlib.md5(name.encode()).hexdigest()
+
 
 FUNCTION_INFO = [
-    {"name": name, "id": str(uuid.uuid4()), "definition": inspect.getsource(obj)}
-    for name, obj in inspect.getmembers(
-        sys.modules["src.lrcbench.benchmarks.code.helpers"]
+    {
+        "name": name,
+        "id": generate_deterministic_id(name),
+        "definition": inspect.getsource(obj),
+    }
+    for i, (name, obj) in enumerate(
+        inspect.getmembers(sys.modules["src.lrcbench.benchmarks.code.helpers"])
     )
     if inspect.isfunction(obj)
     and obj.__module__ == "src.lrcbench.benchmarks.code.helpers"
@@ -40,7 +56,7 @@ async def create_synthetic_datum(
         aliased_definition = definition.replace(name, f"f_{id}")
         aliased_definitions.append(aliased_definition)
 
-    system_message = f"""You will be given the head of a tabular dataset and the definition of 3 functions.
+    system_message = """You will be given the head of a tabular dataset and the definition of 3 functions.
 Please write a question that requires applying these three transformations to the dataset, plus one additional operation, to arrive at the answer.
 Ensure that each of the three transformations is critical for obtaining the correct solution.
 
@@ -222,15 +238,25 @@ class CodeBenchmark(Benchmark):
         ]
 
 
-async def generate_prompts(num_questions: int) -> List[Dict]:
-    async def create_prompt(i):
-        prompt, ids = await create_synthetic_datum(k=3, instance=i)
+async def generate_prompts(num_questions: int, seed: int = 42) -> List[Dict]:
+    random.seed(seed)
+
+    async def create_prompt(i, k=3):
+        prompt, ids = await create_synthetic_datum(k=k, instance=i)
         return {"question": prompt, "answer": ids}
 
-    prompts = await asyncio.gather(*[create_prompt(i) for i in range(num_questions)])
+    prompts = []
+    for i in range(num_questions):
+        prompts.append(await create_prompt(i))
     return prompts
 
 
 if __name__ == "__main__":
-    prompts = asyncio.run(generate_prompts(num_questions=20))
+    if not os.path.exists("temp/prompts.json"):
+        prompts = asyncio.run(generate_prompts(num_questions=20))
+        with open("temp/prompts.json", "w") as f:
+            json.dump(prompts, f)
+    else:
+        with open("temp/prompts.json", "r") as f:
+            prompts = json.load(f)
     benchmark = CodeBenchmark(prompts, haystack_sizes=[10, 20, 30, 50])

@@ -1040,19 +1040,6 @@ def calculate_market_timing_score(df):
     )
 
 
-def identify_potential_market_consolidators(df):
-    market_share = df["estimated_market_share"]
-    financial_strength = df["cash_reserves"].rank(pct=True)
-    operational_efficiency = df["operational_efficiency"]
-    consolidation_score = (
-        market_share + financial_strength + operational_efficiency
-    ) / 3
-    return df.assign(
-        market_consolidator_potential=consolidation_score
-        > consolidation_score.quantile(0.8)
-    )
-
-
 def calculate_product_differentiation_score(df):
     feature_uniqueness = df["has_patents"].map({True: 1.2, False: 1})
     market_positioning = 1 + (df["pricing_power_index"] - 1) * 0.5
@@ -1088,21 +1075,6 @@ def calculate_founder_vision_alignment_score(df):
             market_alignment + execution_alignment + innovation_alignment
         )
         / 3
-    )
-
-
-def identify_potential_talent_magnets(df):
-    growth_appeal = df["growth_rate"].clip(lower=0)
-    innovation_appeal = df["innovation_index"]
-    culture_appeal = df[
-        "estimated_customer_sentiment"
-    ]  # using customer sentiment as a proxy for company culture
-    compensation_appeal = (df["funding_amount"] / df["employee_count"]).rank(pct=True)
-    talent_magnet_score = (
-        growth_appeal + innovation_appeal + culture_appeal + compensation_appeal
-    ) / 4
-    return df.assign(
-        talent_magnet_potential=talent_magnet_score > talent_magnet_score.quantile(0.9)
     )
 
 
@@ -1611,19 +1583,6 @@ def calculate_startup_innovation_velocity(df):
     )
 
 
-def identify_potential_market_consolidators(df):
-    market_share = df["estimated_market_share"]
-    financial_strength = df["cash_reserves"].rank(pct=True)
-    operational_efficiency = df["operational_efficiency"]
-    consolidation_score = (
-        market_share + financial_strength + operational_efficiency
-    ) / 3
-    return df.assign(
-        market_consolidator_potential=consolidation_score
-        > consolidation_score.quantile(0.8)
-    )
-
-
 def estimate_startup_brand_equity(df):
     market_presence = df["estimated_market_share"]
     customer_loyalty = 1 - df["churn_rate"]
@@ -1641,19 +1600,6 @@ def calculate_startup_operational_resilience(df):
         operational_resilience=financial_buffer
         * team_adaptability
         * business_model_diversity
-    )
-
-
-def identify_potential_category_creators(df):
-    market_novelty = 1 - df["estimated_market_share"]
-    product_uniqueness = df["product_differentiation"]
-    vision_strength = df["founder_vision_alignment"]
-    category_creation_score = (
-        market_novelty + product_uniqueness + vision_strength
-    ) / 3
-    return df.assign(
-        category_creator_potential=category_creation_score
-        > category_creation_score.quantile(0.95)
     )
 
 
@@ -2053,4 +1999,377 @@ def estimate_startup_crisis_resilience(df):
             * remote_work_capability
         )
         ** 0.25
+    )
+
+
+def calculate_startup_innovation_efficiency(df):
+    innovation_output = df["innovation_index"]
+    rd_investment = df["burn_rate"] * 0.3  # Assuming 30% of burn rate goes to R&D
+    time_factor = np.log1p(df["years_since_founding"])
+    return df.assign(
+        innovation_efficiency=innovation_output
+        / (np.log1p(rd_investment) * time_factor)
+    )
+
+
+def estimate_startup_market_timing_accuracy(df):
+    product_readiness = df["product_market_fit_score"]
+    market_growth = df["industry"].map(
+        {
+            "Technology": 1.5,
+            "Healthcare": 1.3,
+            "Finance": 1.1,
+            "Retail": 1.0,
+            "Education": 1.2,
+        }
+    )
+    execution_speed = df["iteration_frequency"]
+    return df.assign(
+        market_timing_accuracy=product_readiness * market_growth * execution_speed
+    )
+
+
+def calculate_startup_customer_acquisition_velocity(df):
+    marketing_spend = (
+        df["burn_rate"] * 0.3
+    )  # Assuming 30% of burn rate goes to marketing
+    viral_coefficient = df["estimated_viral_coefficient"]
+    product_appeal = df["product_market_fit_score"]
+    return df.assign(
+        customer_acquisition_velocity=(
+            np.log1p(marketing_spend) * viral_coefficient * product_appeal
+        )
+    )
+
+
+def estimate_startup_ecosystem_contribution_index(df):
+    job_creation = df["employee_count"] / 100
+    innovation_spillover = df["innovation_index"]
+    economic_impact = df["revenue"] / 1e6
+    return df.assign(
+        ecosystem_contribution_index=(
+            job_creation + innovation_spillover + economic_impact
+        )
+        / 3
+    )
+
+
+def calculate_startup_product_market_fit_velocity(df):
+    iteration_speed = df["iteration_frequency"]
+    customer_feedback = df["feedback_loop_strength"]
+    market_responsiveness = 1 / (1 + df["estimated_sales_cycle"])
+    return df.assign(
+        product_market_fit_velocity=iteration_speed
+        * customer_feedback
+        * market_responsiveness
+    )
+
+
+def estimate_startup_brand_equity_growth(df):
+    current_brand_value = df["estimated_brand_value"]
+    market_penetration_rate = df["growth_rate"].clip(lower=0)
+    customer_loyalty = 1 - df["churn_rate"]
+    return df.assign(
+        brand_equity_growth=current_brand_value
+        * market_penetration_rate
+        * customer_loyalty
+    )
+
+
+def identify_potential_unicorn_candidates(df):
+    growth_trajectory = df["growth_rate"] ** 2
+    market_opportunity = df["market_opportunity_score"]
+    funding_momentum = np.log1p(df["funding_amount"]) / df["years_since_founding"]
+    unicorn_score = (growth_trajectory * market_opportunity * funding_momentum) ** (
+        1 / 3
+    )
+    return df.assign(
+        unicorn_candidate_potential=unicorn_score > unicorn_score.quantile(0.98)
+    )
+
+
+def calculate_startup_operational_efficiency_index(df):
+    revenue_per_employee = df["revenue"] / df["employee_count"]
+    burn_rate_efficiency = df["revenue"] / df["burn_rate"]
+    scalability = df["global_scalability"]
+    return df.assign(
+        operational_efficiency_index=(
+            revenue_per_employee * burn_rate_efficiency * scalability
+        )
+        ** (1 / 3)
+    )
+
+
+def estimate_startup_customer_lifetime_value_growth(df):
+    current_ltv = df["customer_ltv"]
+    cross_sell_opportunity = df["product_complexity_score"]
+    customer_satisfaction = df["estimated_customer_sentiment"]
+    return df.assign(
+        ltv_growth_potential=current_ltv
+        * cross_sell_opportunity
+        * customer_satisfaction
+    )
+
+
+def calculate_startup_talent_retention_index(df):
+    compensation_competitiveness = (df["funding_amount"] / df["employee_count"]).rank(
+        pct=True
+    )
+    growth_opportunity = df["growth_rate"].clip(lower=0)
+    work_culture = df["culture_strength"]
+    return df.assign(
+        talent_retention_index=(
+            compensation_competitiveness + growth_opportunity + work_culture
+        )
+        / 3
+    )
+
+
+def estimate_startup_pricing_power_potential(df):
+    market_share = df["estimated_market_share"]
+    product_uniqueness = df["product_differentiation"]
+    customer_value_perception = df["value_realization_rate"]
+    return df.assign(
+        pricing_power_potential=(
+            market_share * product_uniqueness * customer_value_perception
+        )
+        ** (1 / 3)
+    )
+
+
+def calculate_startup_customer_success_index(df):
+    onboarding_efficiency = 1 / df["implementation_complexity"]
+    support_quality = df["customer_success_capacity"]
+    product_ease_of_use = 1 / df["product_complexity_score"]
+    return df.assign(
+        customer_success_index=(
+            onboarding_efficiency * support_quality * product_ease_of_use
+        )
+        ** (1 / 3)
+    )
+
+
+def estimate_startup_market_penetration_velocity(df):
+    growth_rate = df["growth_rate"].clip(lower=0)
+    market_size = df["estimated_tam"]
+    go_to_market_efficiency = df["gtm_efficiency"]
+    return df.assign(
+        market_penetration_velocity=(
+            growth_rate * np.log1p(market_size) * go_to_market_efficiency
+        )
+        ** (1 / 3)
+    )
+
+
+def identify_potential_industry_consolidators(df):
+    market_share = df["estimated_market_share"]
+    financial_strength = df["cash_reserves"].rank(pct=True)
+    operational_efficiency = df["operational_efficiency"]
+    consolidator_score = (
+        market_share + financial_strength + operational_efficiency
+    ) / 3
+    return df.assign(
+        industry_consolidator_potential=consolidator_score
+        > consolidator_score.quantile(0.9)
+    )
+
+
+def calculate_startup_innovation_to_market_index(df):
+    innovation_rate = df["innovation_index"]
+    time_to_market = 1 / df["iteration_frequency"]
+    market_reception = df["product_market_fit_score"]
+    return df.assign(
+        innovation_to_market_index=(innovation_rate / time_to_market) * market_reception
+    )
+
+
+def estimate_startup_customer_acquisition_cost_efficiency(df):
+    marketing_spend = (
+        df["burn_rate"] * 0.3
+    )  # Assuming 30% of burn rate goes to marketing
+    new_customers = df["customer_count"] * df["growth_rate"]
+    ltv = df["customer_ltv"]
+    return df.assign(cac_efficiency=ltv / (marketing_spend / new_customers))
+
+
+def calculate_startup_product_development_efficiency(df):
+    feature_delivery_rate = df["iteration_frequency"]
+    development_team_size = (
+        df["employee_count"] * 0.4
+    )  # Assuming 40% of employees are in product development
+    product_complexity = df["product_complexity_score"]
+    return df.assign(
+        product_development_efficiency=(
+            feature_delivery_rate * np.log1p(development_team_size)
+        )
+        / product_complexity
+    )
+
+
+def estimate_startup_market_timing_advantage(df):
+    product_readiness = df["product_market_fit_score"]
+    market_growth = df["industry"].map(
+        {
+            "Technology": 1.5,
+            "Healthcare": 1.3,
+            "Finance": 1.1,
+            "Retail": 1.0,
+            "Education": 1.2,
+        }
+    )
+    execution_speed = df["iteration_frequency"]
+    return df.assign(
+        market_timing_advantage=product_readiness * market_growth * execution_speed
+    )
+
+
+def calculate_startup_customer_retention_strength(df):
+    product_stickiness = df["product_stickiness"]
+    customer_success_quality = df["customer_success_index"]
+    switching_cost = 1 / (1 - df["churn_rate"]).clip(upper=10)
+    return df.assign(
+        customer_retention_strength=(
+            product_stickiness * customer_success_quality * switching_cost
+        )
+        ** (1 / 3)
+    )
+
+
+def estimate_startup_viral_growth_potential(df):
+    viral_coefficient = df["estimated_viral_coefficient"]
+    user_engagement = df["monthly_active_users"] / df["customer_count"]
+    product_share_ability = (
+        df["product_complexity_score"] * 0.5
+    )  # Assuming simpler products are more shareable
+    return df.assign(
+        viral_growth_potential=viral_coefficient
+        * user_engagement
+        / product_share_ability
+    )
+
+
+def calculate_startup_innovation_roi(df):
+    innovation_output = df["innovation_index"]
+    rd_investment = df["burn_rate"] * 0.3  # Assuming 30% of burn rate goes to R&D
+    time_to_market = 1 / df["iteration_frequency"]
+    return df.assign(
+        innovation_roi=innovation_output / (np.log1p(rd_investment) * time_to_market)
+    )
+
+
+def estimate_startup_market_education_burden(df):
+    product_novelty = 1 - df["product_market_fit_score"]
+    market_sophistication = df["industry"].map(
+        {
+            "Technology": 0.8,
+            "Healthcare": 1.2,
+            "Finance": 1.0,
+            "Retail": 0.7,
+            "Education": 0.9,
+        }
+    )
+    customer_learning_curve = df["product_complexity_score"]
+    return df.assign(
+        market_education_burden=product_novelty
+        * market_sophistication
+        * customer_learning_curve
+    )
+
+
+def calculate_startup_customer_feedback_utilization(df):
+    feedback_collection_rate = df["feedback_loop_strength"]
+    product_iteration_speed = df["iteration_frequency"]
+    customer_centricity = df["customer_success_capacity"]
+    return df.assign(
+        customer_feedback_utilization=feedback_collection_rate
+        * product_iteration_speed
+        * customer_centricity
+    )
+
+
+def estimate_startup_pivot_readiness(df):
+    financial_runway = df["runway_months"] / 12
+    team_adaptability = 1 / np.log1p(df["years_since_founding"])
+    market_exploration = 1 - df["product_market_fit_score"]
+    return df.assign(
+        pivot_readiness=financial_runway * team_adaptability * market_exploration
+    )
+
+
+def identify_potential_category_kings(df):
+    market_share = df["estimated_market_share"]
+    brand_strength = df["estimated_brand_value"].rank(pct=True)
+    innovation_leadership = df["innovation_index"]
+    category_king_score = (market_share + brand_strength + innovation_leadership) / 3
+    return df.assign(
+        category_king_potential=category_king_score > category_king_score.quantile(0.98)
+    )
+
+
+def calculate_startup_talent_leverage(df):
+    revenue_per_employee = df["revenue"] / df["employee_count"]
+    employee_productivity = df["operational_efficiency"]
+    talent_quality = df["talent_density"]
+    return df.assign(
+        talent_leverage=(revenue_per_employee * employee_productivity * talent_quality)
+        ** (1 / 3)
+    )
+
+
+def estimate_startup_product_ecosystem_strength(df):
+    api_extensibility = df["product_complexity_score"] * 0.5
+    partner_network = df["partnership_leverage"]
+    developer_adoption = df["ecosystem_impact_score"]
+    return df.assign(
+        product_ecosystem_strength=(
+            api_extensibility * partner_network * developer_adoption
+        )
+        ** (1 / 3)
+    )
+
+
+def estimate_startup_market_education_effectiveness(df):
+    content_production = df["customer_education_effectiveness"]
+    audience_reach = np.log1p(df["monthly_active_users"])
+    product_complexity = df["product_complexity_score"]
+    return df.assign(
+        market_education_effectiveness=(content_production * audience_reach)
+        / product_complexity
+    )
+
+
+def calculate_startup_customer_success_leverage(df):
+    customer_satisfaction = df["estimated_customer_sentiment"]
+    product_stickiness = df["product_stickiness"]
+    support_efficiency = df["customer_success_capacity"]
+    return df.assign(
+        customer_success_leverage=(
+            customer_satisfaction * product_stickiness * support_efficiency
+        )
+        ** (1 / 3)
+    )
+
+
+def estimate_startup_regulatory_navigation_capability(df):
+    regulatory_burden = df["regulatory_burden"]
+    legal_expertise = (df["funding_amount"] * 0.05).clip(
+        upper=1e6
+    )  # Assuming 5% of funding goes to legal, capped at $1M
+    compliance_track_record = 1 - df["regulatory_risk_score"]
+    return df.assign(
+        regulatory_navigation_capability=(1 / regulatory_burden)
+        * np.log1p(legal_expertise)
+        * compliance_track_record
+    )
+
+
+def identify_potential_moonshot_innovators(df):
+    vision_magnitude = df["founder_vision_alignment"]
+    risk_tolerance = df["burn_rate"] / df["funding_amount"]
+    innovation_capacity = df["innovation_index"]
+    moonshot_score = (vision_magnitude * risk_tolerance * innovation_capacity) ** (
+        1 / 3
+    )
+    return df.assign(
+        moonshot_innovator_potential=moonshot_score > moonshot_score.quantile(0.98)
     )

@@ -9,38 +9,47 @@ Currently, we support 3 settings with similar objectives:
 
 # Benchmarks
 
+In order to make these scores more robust to noise, we stop after 2 consecutive runs that fail to reach 0.6.
+
 ## Helper Function Invocation - Data Science
-| LM | Score (Largest haystack size at which P(success) >= 0.5) |
-|:----------|---------------:|
-| Claude-3-opus-20240229 | 200+ |
-| Claude-3-5-sonnet-20240620 | 140 |
-| GPT-4(-32k) | 40 |
-| Gemini-1.5-pro | 20 |
-| Gemini-1.5-flash | 20 |
-| GPT-4o-2024-08-06 | 20 |
-| GPT-4o-mini | 10 |
-| GPT-4-turbo | 5 |
+| LM | Score (Largest haystack size at which P(success) >= 0.5) | AUC | Scores |
+|:----------|---------------:|:----------|:----------|
+| Gemini-1.5-pro | 180 | 0 | 767777667766765
+| GPT-4(-32k) | 80 | 0 | 8775665755
+| Claude-3-opus-20240229 | 70 | 0 | 878866645
+| Gemini-1.5-flash | 60 | 0 | 98766745
+| GPT-4-turbo | 50 | 0 | 6676645
+| Claude-3-5-sonnet-20240620 | 30 | 0 | 96655
+| GPT-4o-mini | 10 | 0 | 654
+| GPT-4o-2024-08-06 | 0 | 0 | 5
+| gemini-1.5-flash-8b-exp-0827 | 0 | 0 | 3
 
 ## Transaction Matching
-| LM | Score (Largest N pairs at which P(success) >= 0.5) |
-|:----------|---------------:|
-| Claude-3-5-sonnet-20240620 | 160 |
-| Gemini-1.5-pro | 140 |
-| Claude-3-opus-20240229 | 140 |
-| GPT-4 | 40 |
-| Gemini-1.5-flash | 30 |
-| GPT-4o-turbo | 30 |
-| GPT-4o-2024-08-06 | 20 |
-| GPT-4o-mini | 10 |
+| LM | Score (Largest N pairs at which P(success) >= 0.5) | Perfect Score Streak Broken After| Scores |
+|:----------|---------------:|---------------:|:----------|
+| Gemini-1.5-pro | 200 | 20 | TTTT78899877783844
+| Claude-3-5-sonnet-20240620 | 180 | 80 | TTTTTTTTTT8T78634
+| Claude-3-opus-20240229 | 160 | 60 | 9TT89TTT98787723
+| GPT-4(-32k) | 120 | 20 | TTTT8977976955
+| Gemini-1.5-flash | 40 | 10 | TTT6623
+| GPT-4-turbo | 40 | 10 | TTT7652
+| GPT-4o-2024-08-06 | 30 | 10 | TTT823
+| GPT-4o-mini | 20 | 5 | TT853
+| gemini-1.5-flash-8b-exp-0827 | 10 | 5 | TT42
+
+* Previously 40 (gpt-4 only), now 100 (gpt-4-32k)
 
 ## 2-cycle multiplication (Possibly implemented poorly?)
-| LM | Score (Largest N 2-cycles at which P(success) >= 0.5) |
-|:----------|---------------:|
-| Claude-3-5-sonnet-20240620 | 2 |
-| GPT-4o-turbo | 2 |
-| GPT-4o-2024-08-06 | 2 |
-| GPT-4o-mini | 2 |
-| GPT-4 | 2 |
-| Claude-3-opus-20240229 | 1 |
-| Gemini-1.5-pro | 0 |
-| Gemini-1.5-flash | 0 |
+| LM | Score (Largest N 2-cycles at which P(success) >= 0.5) | AUC | Scores |
+|:----------|---------------:|:----------|:----------|
+| GPT-4-turbo | 3 | 1 | T800
+| Claude-3-5-sonnet-20240620 | 2 | 1 | T42
+| Claude-3-opus-20240229 | 2 | 1 | T41
+| GPT-4o-2024-08-06 | 2 | 1 | T12
+| GPT-4o-mini | 2 | 1 | T50
+| GPT-4(-32k) | 2 | 1 | T31
+| Gemini-1.5-pro | 0 | 0 | 0
+| Gemini-1.5-flash | 0 | 0 | 0
+| gemini-1.5-flash-8b-exp-0827 | 0 | 0 | 5
+
+* Previously 2 (gpt-4 only), now 1 (gpt-4-32k)
