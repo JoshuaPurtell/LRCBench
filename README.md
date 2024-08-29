@@ -9,14 +9,16 @@ Currently, we support 3 settings with similar objectives:
 
 # Benchmarks
 
-In order to make these Correctnesses more robust to noise, we stop after 2 consecutive runs that fail to reach 0.6.
-We also increased the sample size for the coding benchmark, as it was a tad noisy.
-I moved from gpt-4/gpt-4-32k to gpt-4-32k at all sizes, as gpt-4 is inferior to gpt-4-32k even up to 4k context. This improved the results for "gpt-4."
+## Notes
+- In order to make these correctnesses more robust to noise, we stop after 2 consecutive runs that fail to reach 0.6.
+- We also increased the sample size for the coding benchmark, as it was a tad noisy.
+- I moved from gpt-4/gpt-4-32k to gpt-4-32k at all sizes, as gpt-4 is inferior to gpt-4-32k even up to 4k context. This improved the results for "gpt-4."
 
-Score: The largest haystack size before the two consecutive runs that fail to reach 0.6.
-Effective Context Window: The average token length (using the GPT-4 tokenizer) of the haystack at the score.
-Size at First Failure: The highest haystack size such that the model earned a full score up to and including that size.
-Correctnesses: Int(correctness_percentage*100) for each haystack size up to the score.
+## Definitions
+- Score: The largest haystack size before the two consecutive runs that fail to reach 0.6.
+- Effective Context Window: The average token length (using the GPT-4 tokenizer) of the haystack at the score.
+- Size at First Failure: The highest haystack size such that the model earned a full score up to and including that size.
+- Correctnesses: Int(correctness_percentage*100) for each haystack size up to the score.
 
 ## Helper Function Invocation - Data Science
 Sample size: 30 problems
