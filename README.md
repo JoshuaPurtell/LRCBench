@@ -14,7 +14,7 @@ We also increased the sample size for the coding benchmark, as it was a tad nois
 I moved from gpt-4/gpt-4-32k to gpt-4-32k at all sizes, as gpt-4 is inferior to gpt-4-32k even up to 4k context. This improved the results for "gpt-4."
 
 Score: The largest haystack size before the two consecutive runs that fail to reach 0.6.
-Effective Context Window: The average token length of the haystack at the score.
+Effective Context Window: The average token length (using the GPT-4 tokenizer) of the haystack at the score.
 Size at First Failure: The highest haystack size such that the model earned a full score up to and including that size.
 Correctnesses: Int(correctness_percentage*100) for each haystack size up to the score.
 
