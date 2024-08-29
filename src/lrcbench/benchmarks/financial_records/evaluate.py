@@ -6,20 +6,23 @@ from apropos import LM_DAG
 from src.lrcbench.benchmarks.financial_records.bench import FinancialRecordsBenchmark
 from src.lrcbench.benchmarks.financial_records.dag import records_problem_single_step
 
+import tiktoken
+gpt_4_tokenizer = tiktoken.encoding_for_model("gpt-4")
+random.seed(42)
 
 async def score_for_size(
     haystack_size: int, dag: LM_DAG, benchmark: FinancialRecordsBenchmark, k: int
 ):
-    random.seed(0)
     questions = benchmark.get_data_for_size(haystack_size, "train")
-    correctnesses = []
-    for question in random.sample(questions, k):
-        try:
-            result = await question.compute_and_score_attempt(dag)
-            correctnesses.append(result)
-        except Exception:
-            correctnesses.append((0, None))
-    return sum([correctness for correctness, _ in correctnesses]) / len(correctnesses)
+    
+    correctnesses = await asyncio.gather(
+        *[
+            question.compute_and_score_attempt(dag)
+            for question in random.sample(questions, k)
+        ]
+    )
+    token_counts = [len(gpt_4_tokenizer.encode(question.information["question"])) for question in questions]
+    return sum([correctness for correctness, _ in correctnesses]) / len(correctnesses), int(sum(token_counts) // len(token_counts))
 
 
 async def main(
@@ -27,10 +30,12 @@ async def main(
 ):
     largest_passing_haystack_size = 0
     success_rates = []
+    mean_token_counts = []
     print("Success rates: ", end="")
     for haystack_size in haystack_sizes:
         try:
-            success_rate = await score_for_size(haystack_size, dag, benchmark, k)
+            success_rate, mean_token_count = await score_for_size(haystack_size, dag, benchmark, k)
+            mean_token_counts.append(mean_token_count)
             success_rates.append(success_rate)
             rate = int(success_rate * 10)
             if success_rate == 1.0:
@@ -55,6 +60,7 @@ async def main(
     print(
         f"\nLargest passing (> .5 P[Success]) haystack size: {largest_passing_haystack_size}"
     )
+    print(f"Mean token count: {mean_token_counts[-1]}")
 
     perfect_score_size = 0
     for size, rate in zip(haystack_sizes, success_rates):
@@ -65,8 +71,7 @@ async def main(
     print(f"Largest haystack size with perfect score: {perfect_score_size}")
     return largest_passing_haystack_size
 
-
-if __name__ == "__main__":
+async def run_evaluation(model_name: str):
     haystack_sizes = [
         2,
         5,
@@ -97,8 +102,18 @@ if __name__ == "__main__":
     benchmark = FinancialRecordsBenchmark(
         haystack_sizes=haystack_sizes, k=k_for_success_rate
     )
-    dag = records_problem_single_step(model_name="gemini-1.5-flash-8b-exp-0827")
-    asyncio.run(main(haystack_sizes, dag, benchmark, k_for_success_rate))
+    dag = records_problem_single_step(model_name=model_name)
+    await main(haystack_sizes, dag, benchmark, k_for_success_rate)
+
+async def run_for_models(models: List[str]):
+    for model in models:
+        print(f"Running evaluation for {model}")
+        await run_evaluation(model_name=model)
+
+
+if __name__ == "__main__":
+    models = ["gpt-4-turbo", "gpt-4o-2024-08-06", "gpt-4o-mini", "gpt-4-32k","claude-3-5-sonnet-20240620","claude-3-opus-20240229","gemini-1.5-pro", "gemini-1.5-flash"]#,"gemini-1.5-flash-8b-exp-0827"
+    asyncio.run(run_for_models(models))
 
     # New Results
     # Sonnet: 180 | 80 | TTTTTTTTTT8T78634

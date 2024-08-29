@@ -253,7 +253,7 @@ async def generate_prompts(num_questions: int, seed: int = 42) -> List[Dict]:
 
 if __name__ == "__main__":
     if not os.path.exists("temp/prompts.json"):
-        prompts = asyncio.run(generate_prompts(num_questions=20))
+        prompts = asyncio.run(generate_prompts(num_questions=50))
         with open("temp/prompts.json", "w") as f:
             json.dump(prompts, f)
     else:

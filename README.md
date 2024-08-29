@@ -9,42 +9,54 @@ Currently, we support 3 settings with similar objectives:
 
 # Benchmarks
 
-In order to make these scores more robust to noise, we stop after 2 consecutive runs that fail to reach 0.6.
+## Notes
+- In order to make these correctnesses more robust to noise, we stop after 2 consecutive runs that fail to reach 0.6.
+- We also increased the sample size for the coding benchmark, as it was a tad noisy.
+- I moved from gpt-4/gpt-4-32k to gpt-4-32k at all sizes, as gpt-4 is inferior to gpt-4-32k even up to 4k context. This improved the results for "gpt-4."
 
-Best Score: The largest haystack size before the two consecutive runs that fail to reach 0.6.
-Best Streak: The highest haystack size such that the model earned a full score up to and including that size.
-Scores: The scores for each haystack size.
+## Definitions
+- Score: The largest haystack size before the two consecutive runs that fail to reach 0.6.
+- Effective Context Window: The average token length (using the GPT-4 tokenizer) of the haystack at the score.
+- Size at First Failure: The highest haystack size such that the model earned a full score up to and including that size.
+- Correctnesses: Int(correctness_percentage*100) for each haystack size up to the score.
 
 ## Helper Function Invocation - Data Science
-| LM | Best Score | Best Streak | Scores |
-|:----------|---------------:|:----------|:----------|
-| Gemini-1.5-pro | 180 | 0 | 767777667766765
-| GPT-4(-32k) | 80 | 0 | 8775665755
-| Claude-3-opus-20240229 | 70 | 0 | 878866645
-| Gemini-1.5-flash | 60 | 0 | 98766745
-| GPT-4-turbo | 50 | 0 | 6676645
-| Claude-3-5-sonnet-20240620 | 30 | 0 | 96655
-| GPT-4o-mini | 10 | 0 | 654
-| GPT-4o-2024-08-06 | 0 | 0 | 5
-| gemini-1.5-flash-8b-exp-0827 | 0 | 0 | 3
+Sample size: 30 problems
+| LM | Score | Size at First Failure | Effective Context Window | Correctnesses |
+|:----------|---------------:|:----------|---------------:|:----------|
+| claude-3-opus-20240229 | 50 | 0 | 8933 | 7776645
+| claude-3-5-sonnet-20240620 | 30 | 0 | 6393 | 87655
+| gpt-4-32k | 30 | 0 | 6393 | 76655
+| gemini-1.5-pro | 20 | 0 | 4900 | 6655
+| gemini-1.5-flash | 20 | 0 | 4900 | 7654
+| gpt-4o-2024-08-06 | 10 | 0 | 1123 | 655
+| gpt-4o-mini | 10 | 0 | 1123 | 744
+| gpt-4-turbo | 0 | 0 | 0 | 5
+
+![Coding Problem Performance](visuals/coding_problem.png)
 
 ## Transaction Matching
-| LM | Best Score | Best Streak | Scores |
-|:----------|---------------:|---------------:|:----------|
-| Gemini-1.5-pro | 200 | 20 | TTTT78899877783844
-| Claude-3-5-sonnet-20240620 | 180 | 80 | TTTTTTTTTT8T78634
-| Claude-3-opus-20240229 | 160 | 60 | 9TT89TTT98787723
-| GPT-4(-32k) | 120 | 20 | TTTT8977976955
-| Gemini-1.5-flash | 40 | 10 | TTT6623
-| GPT-4-turbo | 40 | 10 | TTT7652
-| GPT-4o-2024-08-06 | 30 | 10 | TTT823
-| GPT-4o-mini | 20 | 5 | TT853
-| gemini-1.5-flash-8b-exp-0827 | 10 | 5 | TT42
+Sample size: 10 problems
+| LM | Score | Size at First Failure | Effective Context Window | Correctnesses |
+|:----------|---------------:|---------------:|---------------:|:----------|
+| Claude-3-5-sonnet-20240620 | 400 | 80 | 13798 | TTTTTTTTTT8T7863852 |
+| Gemini-1.5-pro | 200 | _* | _ | TTTT78899877783844 |
+| Claude-3-opus-20240229 | 160 | 60 | 4982 | 9TT89TTT98787723 |
+| GPT-4(-32k) | 120 | 20 | 3882 | TTT98987966955 |
+| Gemini-1.5-flash | 40 | _ | _ | TTT6623 |
+| GPT-4-turbo | 40 | 10 | 1388 | TTT7652 |
+| GPT-4o-2024-08-06 | 30 | 10 | 1113 | TTT823 |
+| GPT-4o-mini | 20 | 5 | 837 | TT853 |
+| gemini-1.5-flash-8b-exp-0827 | 10 | 5 | _ | TT42 |
+
+![Transactions Problem Performance](visuals/transactions_problem.png)
 
 * Previously 40 (gpt-4 only), now 100 (gpt-4-32k)
+* I can no longer get Gemini models to run without getting failure responses from them (possibly due to safety filters?)
 
 ## 2-cycle multiplication (Possibly implemented poorly?)
-| LM | Best Score | Best Streak | Scores |
+Sample size: 10 problems
+| LM | Score | Size at First Failure | Correctnesses |
 |:----------|---------------:|:----------|:----------|
 | GPT-4-turbo | 3 | 1 | T800
 | Claude-3-5-sonnet-20240620 | 2 | 1 | T42

@@ -8,30 +8,35 @@ from src.lrcbench.benchmarks.code.bench import CodeBenchmark, generate_prompts
 from src.lrcbench.benchmarks.code.dag import code_problem_single_step
 
 
+import tiktoken
+gpt_4_tokenizer = tiktoken.encoding_for_model("gpt-4")
+
 async def score_for_size(
-    haystack_size: int, dag: LM_DAG, benchmark: CodeBenchmark, k: int
+    haystack_size: int, dag: LM_DAG, benchmark: CodeBenchmark
 ):
     questions = benchmark.get_data_for_size(haystack_size, "train")
     random.seed(0)
     correctnesses = await asyncio.gather(
         *[
             question.compute_and_score_attempt(dag)
-            for question in random.sample(questions, k)
+            for question in questions
         ]
     )
-    return sum([correctness for correctness, _ in correctnesses]) / len(correctnesses)
+    token_counts = [len(gpt_4_tokenizer.encode(question.information["question"])) for question in questions]
+    return sum([correctness for correctness, _ in correctnesses]) / len(correctnesses), int(sum(token_counts) // len(token_counts))
 
 
 async def main(
-    haystack_sizes: List[int], dag: LM_DAG, benchmark: CodeBenchmark, k: int
+    haystack_sizes: List[int], dag: LM_DAG, benchmark: CodeBenchmark
 ):
     largest_passing_haystack_size = 0
     success_rates = []
+    mean_token_counts = []
     print("Success rates: ", end="")
     for haystack_size in haystack_sizes:
-        # try:
-        success_rate = await score_for_size(haystack_size, dag, benchmark, k)
+        success_rate, mean_token_count = await score_for_size(haystack_size, dag, benchmark)
         success_rates.append(success_rate)
+        mean_token_counts.append(mean_token_count)
         rate = int(success_rate * 10)
         if success_rate == 1.0:
             print(f"\033[94mT\033[0m", end="")
@@ -48,15 +53,11 @@ async def main(
                 if len(success_rates) > 0:
                     success_rates.pop()
             break
-        # if success_rate <= 0.5:
-        #     break
         largest_passing_haystack_size = haystack_size
-        # except Exception as e:
-        #     print(f"\nError for haystack size {haystack_size}: {e}")
-        #     break
     print(
-        f"\nLargest passing (> .5 P[Success]) haystack size: {largest_passing_haystack_size}"
+        f"\nLargest passing haystack size: {largest_passing_haystack_size}"
     )
+    print(f"Mean token counts: {mean_token_counts}")
 
     perfect_score_size = 0
     for size, rate in zip(haystack_sizes, success_rates):
@@ -64,11 +65,11 @@ async def main(
             perfect_score_size = size
         else:
             break
-    print(f"Largest haystack size with perfect score: {perfect_score_size}")
+    print(f"Largest haystack size with streak: {perfect_score_size}")
     return largest_passing_haystack_size
 
 
-async def run_evaluation():
+async def run_evaluation(model_name: str):
     haystack_sizes = [
         5,
         10,
@@ -85,32 +86,36 @@ async def run_evaluation():
         140,
         160,
         180,
-    ]  # 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 120, 140, 160,
-    k_for_pass_at_k = 10
-    # prompts = await generate_prompts(num_questions=50)
+        200
+    ]
     if not os.path.exists("temp/prompts.json"):
-        prompts = await generate_prompts(num_questions=20)
+        prompts = await generate_prompts(num_questions=50)
         with open("temp/prompts.json", "w") as f:
             json.dump(prompts, f)
     else:
         with open("temp/prompts.json", "r") as f:
             prompts = json.load(f)
+    print(f"Running evaluation for {model_name}")
     benchmark = CodeBenchmark(prompts, haystack_sizes=haystack_sizes)
-    dag = code_problem_single_step(model_name="gemini-1.5-flash-8b-exp-0827")
-    await main(haystack_sizes, dag, benchmark, k_for_pass_at_k)
+    dag = code_problem_single_step(model_name=model_name)
+    await main(haystack_sizes, dag, benchmark)
 
+async def run_for_models(models: List[str]):
+    for model in models:
+        await run_evaluation(model_name=model)
 
 if __name__ == "__main__":
-    asyncio.run(run_evaluation())
+
+    models = ["gpt-4-turbo", "gpt-4o-2024-08-06", "gpt-4o-mini", "gpt-4-32k","claude-3-5-sonnet-20240620","claude-3-opus-20240229","gemini-1.5-pro", "gemini-1.5-flash"]#,"gemini-1.5-flash-8b-exp-0827"
+    asyncio.run(run_for_models(models))
 
     # Make it hit the cache
 
-    # claude-3-opus-20240229: 70 | 0 | 878866645
-    # claude-3-5-sonnet-20240620: 30 | 0 | 96655
-    # gpt-4-32k: 80 | 0 | 8775665755
-    # gemini-1.5-pro: 180 | 0 | 767777667766765
-    # gemini-1.5-flash: 60 | 0 | 98766745
-    # gpt-4-turbo: 50 | 0 | 6676645
-    # gpt-4o-2024-08-06: 0 | 0 | 5
-    # gpt-4o-mini: 10 | 0 | 654
-    # gemini-1.5-flash-8b-exp-0827: 0 | 0 | 3
+    # claude-3-opus-20240229: 50 | 0 | 8933 | 7776645
+    # claude-3-5-sonnet-20240620: 30 | 0 | 6393 | 87655
+    # gpt-4-32k: 30 | 0 | 6393 | 76655
+    # gemini-1.5-pro: 20 | 0 | 4900 | 6655
+    # gemini-1.5-flash: 20 | 0 | 4900 | 7654
+    # gpt-4-turbo: 0 | 0 | 0 | 5
+    # gpt-4o-2024-08-06: 10 | 0 | 1123 | 655
+    # gpt-4o-mini: 10 | 0 | 1123 | 744
