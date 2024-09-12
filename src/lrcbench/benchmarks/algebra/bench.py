@@ -16,10 +16,10 @@ def create_synthetic_datum(k=5, trial=0) -> Tuple[List[Permutation], Permutation
 
     two_cycles = [p for p in all_elements if is_two_cycle(p)]
 
-    haystack = random.sample(two_cycles, k=min(k, len(two_cycles)))
+    haystack = random.choices(two_cycles, k=k)
     needle = Permutation()
     for cycle in haystack:
-        needle = needle * cycle
+        needle = cycle * needle
     return haystack, needle
 
 
@@ -42,6 +42,11 @@ def compare_permutations(answer_str: str, correct_permutation: Permutation) -> b
                 .replace("(", "")
                 .replace(".", "")
                 .replace(":", "")
+                .replace("\\", "")
+                .replace("$", "")
+                .replace("[","")
+                .replace("]","")
+                .replace("*","")
                 .strip()
                 for e in cycle.replace(",", " ").split()
             ]
@@ -158,6 +163,9 @@ class AlgebraBenchmark(QABenchmark):
 
 
 if __name__ == "__main__":
-    benchmark = AlgebraBenchmark(haystack_sizes=[2], k=10)
-    questions = benchmark.get_data_for_size(2, "train")
-    print(questions[0].information)
+    sizes = [2,3,4,5,6]
+    benchmark = AlgebraBenchmark(haystack_sizes=sizes, k=10)
+    for size in sizes:
+        questions = benchmark.get_data_for_size(size, "train")
+        print(questions[0].information)
+
