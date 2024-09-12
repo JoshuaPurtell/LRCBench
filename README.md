@@ -58,14 +58,15 @@ Sample size: 10 problems
 Sample size: 10 problems
 | LM | Score | Size at First Failure | Correctnesses |
 |:----------|---------------:|:----------|:----------|
-| GPT-4-turbo | 3 | 1 | T800
-| Claude-3-5-sonnet-20240620 | 2 | 1 | T42
-| Claude-3-opus-20240229 | 2 | 1 | T41
-| GPT-4o-2024-08-06 | 2 | 1 | T12
-| GPT-4o-mini | 2 | 1 | T50
-| GPT-4(-32k) | 2 | 1 | T31
+| o1-mini | 30 | 2 | TT9TT897977666
+| o1-preview | 20 | 0 | 7688877666623
+| Claude-3-5-sonnet-20240620 | 3 | 1 | T632
+| Claude-3-opus-20240229 | 3 | 1 | T810
+| GPT-4-turbo | 3 | 1 | T752
+| GPT-4o-2024-08-06 | 3 | 1 | T632
+| GPT-4 | 2 | 1 | T54
+| GPT-4o-mini | 2 | 1 | T34
 | Gemini-1.5-pro | 0 | 0 | 0
 | Gemini-1.5-flash | 0 | 0 | 0
-| gemini-1.5-flash-8b-exp-0827 | 0 | 0 | 5
 
 * Previously 2 (gpt-4 only), now 1 (gpt-4-32k)
