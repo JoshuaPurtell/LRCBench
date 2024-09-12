@@ -20,7 +20,7 @@ def algebra_problem_single_step(model_name="gpt-3.5-turbo"):
             premise=[
                 Topic(
                     topic_name="Premise",
-                    topic_template="# Premise\nYou will be given a list of 2-cycles from the symmetric group S4 under left multiplication. These are written in cycle notation, where each cycle represents a permutation of the elements {0, 1, 2, 3}.",
+                    topic_template="# Premise\nYou will be given a list of 2-cycles from the symmetric group S4 under right multiplication. These are written in cycle notation, where each cycle represents a permutation of the elements {0, 1, 2, 3}.",
                     instructions_fields={},
                     input_fields=[],
                 )
@@ -28,7 +28,7 @@ def algebra_problem_single_step(model_name="gpt-3.5-turbo"):
             objective=[
                 Topic(
                     topic_name="Objective",
-                    topic_template="# Objective\nMultiply the given 2-cycles and provide the result as a single permutation in cycle notation. For example, if given (1 2) (2 3) (3 4), should observe that 4 -> 3 -> 2 -> 1, 3 -> 4,  3 -> 2, 1 -> 2, and so the result is (1 4 3 2).",
+                    topic_template="# Objective\nMultiply the given 2-cycles and provide the result as a single permutation in cycle notation. For example, if given (1 2) (2 3) (3 4), should observe that 4 -> 3 -> 2 -> 1, 3 -> 4, 2 -> 3, 1 -> 2, and so the result is (4 1 2 3).",
                     instructions_fields={},
                     input_fields=[],
                 )
